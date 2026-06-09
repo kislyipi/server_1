@@ -24,8 +24,6 @@ services:
       - "9113:9113"
     command:
       - -nginx.scrape-uri=http://nginx:80/metrics_status
-    depends_on:
-      - telego-nginx
 
   node-exporter:
     image: prom/node-exporter:latest
