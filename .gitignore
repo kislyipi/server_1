@@ -1,0 +1,6 @@
+.env
+*.local
+certbot/
+.vscode/
+grafana/data/
+prometheus/data
