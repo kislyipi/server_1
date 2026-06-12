@@ -23,7 +23,9 @@ services:
     ports:
       - "9113:9113"
     command:
-      - -nginx.scrape-uri=http://172.17.0.1:8080/metrics
+      - -nginx.scrape-uri=http://nginx:8080/metrics
+    depends_on:
+      - nginx
 
 
 
