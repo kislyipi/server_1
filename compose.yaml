@@ -5,6 +5,14 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    deploy:
+      resources:
+        limits:
+          memory: 600M
     volumes:
       - ./nginx/html:/usr/share/nginx/html
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
