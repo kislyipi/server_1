@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
 
   bouncer:
-    image: crowdsecurity/firewall-bouncer-iptables:latest
+    image: ghcr.io/frigori/cs-firewall-bouncer-armv7:sha-9e1ae4b
     network_mode: host
     cap_add:
       - NET_ADMIN
