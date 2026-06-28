@@ -1,7 +1,7 @@
 services:
 
   nginx:
-    image: crowdsecurity/openresty:latest
+    image: nginx:alpine
     ports:
       - "80:80"
       - "443:443"
@@ -13,16 +13,12 @@ services:
       resources:
         limits:
           memory: 600M
-    environment:
-      - CROWDSEC_LAPI_URL=http://crowdsec:8080
-      - CROWDSEC_BOUNCER_KEY=${bouncer_key}
     volumes:
       - ./nginx/html:/usr/share/nginx/html
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
       - ./nginx/logs:/var/log/nginx
-      - ./crowdsec/bouncer:/var/lib/crowdsec/
     restart: unless-stopped
     depends_on:
       - crowdsec
@@ -30,6 +26,8 @@ services:
   crowdsec:
     image: crowdsecurity/crowdsec:latest
     container_name: crowdsec
+    ports:
+      - "127.0.0.1:8080:8080"
     environment:
       - COLLECTIONS=crowdsecurity/nginx crowdsecurity/base-http-scenarios crowdsecurity/whitelist-good-bots
       - BOUNCER_KEY_nginx-bouncer=${bouncer_key}
@@ -37,6 +35,18 @@ services:
       - ./nginx/logs:/var/log/nginx:ro
       - ./crowdsec/data:/var/lib/crowdsec/data
       - ./crowdsec/config:/etc/crowdsec
+    restart: unless-stopped
+
+  bouncer:
+    image: crowdsecurity/firewall-bouncer-iptables:latest
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - CROWDSEC_LAPI_URL=http://127.0.0.1:8080
+      - BOUNCER_KEY=${bouncer_key}
+    depends_on:
+      - crowdsec
     restart: unless-stopped
 
   certbot:
