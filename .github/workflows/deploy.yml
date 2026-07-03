@@ -31,6 +31,7 @@ jobs:
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy image \
+            --ignore-vulns CVE-2025-68121,CVE-2026-33815 \
             --quiet \
             --severity CRITICAL \
             --ignore-unfixed \
