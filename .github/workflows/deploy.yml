@@ -3,6 +3,11 @@ name: server deployment
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.github/**'
+      - '.cd_exclude/**'
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   validate:
@@ -10,6 +15,15 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Detect changed files
+      uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          nginx: 'nginx/**'
+          prometheus: 'prometheus/**'
+          compose: 'docker-compose.yml'
 
     - name: Generate test SSL certificates
       run: |
@@ -26,6 +40,7 @@ jobs:
       run: docker compose up -d
 
     - name: Scan images for vulnerabilities
+      if: github.event_name == 'schedule' || steps.filter.outputs.compose == 'true'
       run: |
         for id in $(docker compose images -q); do
           docker run --rm \
@@ -48,15 +63,18 @@ jobs:
         done
 
     - name: Validate nginx configuration
+      if: steps.filter.outputs.nginx == 'true'
       run: |
         curl -fkI https://localhost | grep -q "200 OK"
         docker compose exec nginx nginx -t
 
     - name: Validate Docker Compose file
+      if: steps.filter.outputs.compose == 'true'
       run: |
         docker compose config -q
 
     - name: Validate Prometheus config
+      if: steps.filter.outputs.prometheus == 'true'
       run: |
         docker run --rm -v $(pwd)/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
           --entrypoint promtool prom/prometheus check config /etc/prometheus/prometheus.yml
