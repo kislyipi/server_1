@@ -78,7 +78,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
-        source: ".,!cd_exclude/**,!certbot/**,!Dockerfile"
+        source: ".,!cd_exclude/**,!certbot/**,!Dockerfile,!.github/**"
         target: "/home/${{ secrets.SSH_USER }}/test-site"
 
     - name: Login to Docker Hub
