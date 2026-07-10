@@ -71,7 +71,7 @@ jobs:
     - name: Validate nginx configuration
       if: steps.check.outputs.need_validation == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.nginx == 'true')
       run: |
-        curl -fkI https://localhost | grep -q "200 OK"
+        curl --retry 5 --retry-delay 2 -fkI https://localhost | grep -q "200 OK"
         docker compose exec nginx nginx -t
 
     - name: Validate Docker Compose file
