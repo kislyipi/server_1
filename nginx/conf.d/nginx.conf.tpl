@@ -16,8 +16,6 @@ server {
     }
 }
 
-# START_SSL
-
 server {
     listen 443 ssl;
     server_name ${domain};
@@ -41,8 +39,6 @@ server {
     }
 }
 
-# END_SSL
-
 server {
     listen 8080;
     server_name localhost;
@@ -55,5 +51,3 @@ server {
         deny all;
     }
 }
-
-#k

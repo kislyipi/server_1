@@ -21,30 +21,7 @@ services:
       - ./nginx/logs:/var/log/nginx
     environment:
       - domain=${domain}
-    command: >
-      sh -c "
-        envsubst '\${domain}' < /etc/nginx/conf.d/nginx.conf.tpl > /etc/nginx/conf.d/nginx.conf &&
-        if [ ! -f /etc/letsencrypt/live/\${domain}/fullchain.pem ]; then
-          sed -i '/# START_SSL/,/# END_SSL/d' /etc/nginx/conf.d/nginx.conf;
-          last_mtime=0;
-        else
-          last_mtime=\$(stat -c %Y /etc/letsencrypt/live/\${domain}/fullchain.pem);
-        fi &&
-        nginx &&
-        while true; do
-          if [ -f /etc/letsencrypt/live/\${domain}/fullchain.pem ]; then
-            current_mtime=\$(stat -c %Y /etc/letsencrypt/live/\${domain}/fullchain.pem);
-            if [ \$current_mtime -ne \$last_mtime ]; then
-              envsubst '\${domain}' < /etc/nginx/conf.d/nginx.conf.tpl > /etc/nginx/conf.d/nginx.conf;
-              nginx -s reload;
-              last_mtime=\$current_mtime;
-            fi;
-          else
-            last_mtime=0;
-          fi;
-          sleep 30;
-        done
-      "
+    command: sh -c "envsubst '$${domain}' < /etc/nginx/conf.d/nginx.conf.tpl > /etc/nginx/conf.d/nginx.conf && nginx -g 'daemon off;'"
     restart: unless-stopped
 
   certbot:
