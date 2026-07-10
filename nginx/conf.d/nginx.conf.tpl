@@ -16,6 +16,8 @@ server {
     }
 }
 
+# START_SSL
+
 server {
     listen 443 ssl;
     server_name ${domain};
@@ -38,6 +40,8 @@ server {
         index index.html;
     }
 }
+
+# END_SSL
 
 server {
     listen 8080;
