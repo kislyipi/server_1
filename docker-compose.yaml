@@ -29,7 +29,8 @@ services:
     volumes:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
-    restart: unless-stopped
+    command: certonly --webroot -w /var/www/certbot -d ${domain} --non-interactive --agree-tos --email admin@${domain} --force-renewal
+    restart: on-failure
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.5.1
@@ -68,6 +69,7 @@ services:
       - ./prometheus/data:/prometheus/data
     environment:
       - domain=${domain}
+    user: "1000:1000"
     entrypoint: /bin/sh
     command: -c "sed 's/\\$${domain}/'$$domain'/g' /etc/prometheus/prometheus.yml.tpl > /etc/prometheus/prometheus.yml && /bin/prometheus --config.file=/etc/prometheus/prometheus.yml"
     restart: unless-stopped
