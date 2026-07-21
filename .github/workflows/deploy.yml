@@ -44,6 +44,7 @@ jobs:
           -keyout ./swag/config/etc/letsencrypt/live/localhost/privkey.pem \
           -out ./swag/config/etc/letsencrypt/live/localhost/fullchain.pem \
           -subj "/CN=localhost"
+        chmod 644 ./swag/config/etc/letsencrypt/live/localhost/*.pem
 
     - name: Login to Docker Hub
       if: steps.check.outputs.need_validation == 'true'
