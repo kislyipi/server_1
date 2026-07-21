@@ -1,6 +1,6 @@
 services:
 
-  swag:
+  nginx:
     image: linuxserver/swag
     ports:
       - "80:80"
@@ -24,7 +24,7 @@ services:
     command:
       - -nginx.scrape-uri=http://swag:8080/metrics
     depends_on:
-      - swag
+      - nginx
     restart: unless-stopped
 
   blackbox-exporter:
