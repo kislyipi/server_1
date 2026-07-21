@@ -68,11 +68,11 @@ jobs:
         for i in {1..10}; do
           curl -sfk https://localhost && break || sleep 2
         done
-        curl -fkI https://localhost | grep -q "200 OK"
         docker compose exec nginx nginx -t
         docker compose exec nginx cat /var/log/nginx/error.log
         docker compose exec nginx cat /var/log/nginx/access.log
         docker compose ps
+        curl -fkI https://localhost | grep -q "200 OK"
 
     - name: Validate Docker Compose file
       if: steps.check.outputs.need_validation == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.compose == 'true')
