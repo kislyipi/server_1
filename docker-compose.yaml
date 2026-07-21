@@ -15,10 +15,10 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - ./nginx/html:/config/www
-      - ./nginx/conf.d/default.conf:/config/nginx/site-confs/default.conf:ro
+      - ./nginx/conf.d/default.conf:/config/nginx/site-confs/default.conf
       - ./swag/config:/config
     restart: unless-stopped
-    
+
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.5.1
     ports:
