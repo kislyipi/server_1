@@ -69,9 +69,6 @@ jobs:
           curl -sfk https://localhost && break || sleep 2
         done
         docker compose exec nginx nginx -t
-        docker compose exec nginx cat /var/log/nginx/error.log
-        docker compose exec nginx cat /var/log/nginx/access.log
-        docker compose ps
         curl -fkI https://localhost | grep -q "200 OK"
 
     - name: Validate Docker Compose file
