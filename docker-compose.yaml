@@ -1,46 +1,30 @@
 services:
 
-  nginx:
-    build: ./nginx
+  swag:
+    image: linuxserver/swag
     ports:
       - "80:80"
       - "443:443"
-    ulimits:
-      nofile:
-        soft: 65535
-        hard: 65535
-    deploy:
-      resources:
-        limits:
-          memory: 600M
-    volumes:
-      - ./nginx/html:/usr/share/nginx/html
-      - ./nginx/conf.d/nginx.conf.tpl:/etc/nginx/conf.d/nginx.conf.tpl:ro
-      - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt
-      - ./nginx/logs:/var/log/nginx
     environment:
+      - PUID=1000
+      - PGID=1000
+      - URL=${domain}
+      - VALIDATION=http
       - TZ=Europe/Moscow
-      - domain=${domain}
-    command: sh -c "envsubst '$${domain}' < /etc/nginx/conf.d/nginx.conf.tpl > /etc/nginx/conf.d/nginx.conf && nginx -g 'daemon off;'"
-    restart: unless-stopped
-
-  certbot:
-    image: certbot/certbot:v5.1.0
     volumes:
-      - ./certbot/www:/var/www/certbot
-      - ./certbot/conf:/etc/letsencrypt
-    command: certonly --webroot -w /var/www/certbot -d ${domain} --non-interactive --agree-tos --email admin@${domain} --force-renewal
-    restart: on-failure
+      - ./nginx/html:/config/www
+      - ./nginx/conf.d/default.conf:/config/nginx/site-confs/default.conf:ro
+      - ./swag/config:/config
+    restart: unless-stopped
 
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.5.1
     ports:
       - "9113:9113"
     command:
-      - -nginx.scrape-uri=http://nginx:8080/metrics
+      - -nginx.scrape-uri=http://swag:8080/metrics
     depends_on:
-      - nginx
+      - swag
     restart: unless-stopped
 
   blackbox-exporter:
