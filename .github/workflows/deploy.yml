@@ -62,14 +62,20 @@ jobs:
       if: steps.check.outputs.need_validation == 'true'
       run: docker compose up -d
 
-    - name: Wait for nginx to be ready
+    - name: Checking nginx status
       if: steps.check.outputs.need_validation == 'true'
       run: |
         for i in {1..10}; do
           curl -sfk https://localhost && break || sleep 2
         done
         docker compose exec nginx nginx -t
-        curl -fkI https://localhost | grep -q "200 OK"
+        status=$(curl -o /dev/null -s -w "%{http_code}" -fk https://localhost)
+        if [ "$status" -eq 200 ]; then
+          echo "Nginx is ready (status $status)"
+        else
+          echo "Unexpected status: $status"
+          exit 1
+        fi
 
     - name: Validate Docker Compose file
       if: steps.check.outputs.need_validation == 'true' && (github.event_name == 'schedule' || steps.filter.outputs.compose == 'true')

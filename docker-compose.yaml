@@ -96,6 +96,6 @@ services:
       - ./promtail/promtail.yml:/etc/promtail/promtail.yml:ro
       - /var/log:/var/log/host:ro
     command: -config.file=/etc/promtail/promtail.yml
-    restart: unless-stopped
     depends_on:
       - loki
+    restart: unless-stopped
