@@ -18,9 +18,8 @@ services:
       - PGID=1000
       - TZ=Europe/Moscow
       - URL=${domain}
-      - SUBDOMAINS=          # leave empty for bare domain
+      - SUBDOMAINS=
       - VALIDATION=http
-      - EMAIL=admin@${domain}
     volumes:
       - ./nginx/html:/config/www
       - ./nginx/conf.d/nginx.conf.tpl:/defaults/nginx/site-confs/default.conf:ro
@@ -28,14 +27,12 @@ services:
       - ./nginx/logs:/config/log/nginx
     restart: unless-stopped
 
-  # removed certbot service
-
   nginx-exporter:
     image: nginx/nginx-prometheus-exporter:1.5.1
     ports:
       - "9113:9113"
     command:
-      - -nginx.scrape-uri=http://swag:8080/metrics
+      - -nginx.scrape-uri=http://nginx:8080/metrics
     depends_on:
       - nginx
     restart: unless-stopped
