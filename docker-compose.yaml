@@ -32,6 +32,7 @@ services:
     volumes:
       - ./crowdsec/data:/var/lib/crowdsec/data/
       - ./nginx/logs:/var/log/swag:ro
+      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml:ro
     security_opt:
       - no-new-privileges=true
     restart: unless-stopped
